@@ -14,6 +14,9 @@
     "flight"
   ],
   "author": "Arnaud Ceccaldi",
+  "contributors": [
+    "Ludovic Fardel"
+  ],
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/DroneWorks/rolling-spider-wii/issues"
