@@ -25,7 +25,11 @@ var drone = new RollingSpider(),
     buttons = {
         plus: false,
         minus: false,
-        home: false
+        home: false,
+        l: false,
+        r: false,
+        zl: false,
+        zr: false
     };
 
 var packets = pakkit.export({
@@ -95,9 +99,11 @@ HID.devices().forEach((function(d) {
                     right: packet.right
                 };
 
-            if (packet.buttons.hasOwnProperty('plus')) {
-                buttons.plus = packet.buttons.plus === true;
-            }
+            Object.keys(buttons).forEach(function (key) {
+                if (packet.buttons.hasOwnProperty(key)) {
+                    buttons[key] = packet.buttons[key] === true;
+                }
+            });
 
             if (JSON.stringify(prevSticks) !== JSON.stringify(sticks)) {
                 joysticks = {
@@ -137,6 +143,34 @@ drone.connect(function () {
                     console.log('takeOff');
                     drone.takeOff();
                 }
+                return;
+            }
+
+            if (buttons.home) {
+                buttons.home = false;
+                drone.emergency();
+                return;
+            }
+
+            if (buttons.zl) {
+                buttons.zl = false;
+                drone.leftFlip();
+                return;
+            }
+            if (buttons.zr) {
+                buttons.zr = false;
+                drone.rightFlip();
+                return;
+            }
+
+            if (buttons.l) {
+                buttons.l = false;
+                drone.backFlip();
+                return;
+            }
+            if (buttons.r) {
+                buttons.r = false;
+                drone.frontFlip();
                 return;
             }
 
