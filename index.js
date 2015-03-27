@@ -9,7 +9,7 @@ var HID = require('node-hid'),
     RollingSpider = require("rolling-spider");
 
 var drone = new RollingSpider(),
-    droneStatus = {
+    status = {
         flying: false
     },
     joysticks = {
@@ -70,7 +70,7 @@ var packets = pakkit.export({
 
 function normalize(value) {
     // Create a dead-zone for the joysticks
-    if (Math.abs(value) < 8) return 0;
+    if (Math.abs(value) < 10) return 0;
 
     var sign = value < 0 ? -1 : 1,
         normalized = 100 * Math.min(Math.abs(value) / 65, 1);
@@ -128,14 +128,14 @@ drone.connect(function () {
         function commandLoop() {
             if (buttons.plus) {
                 buttons.plus = false;
-                if (droneStatus.flying) {
-                    droneStatus.flying = false;
-                    console.log('takeOff');
-                    drone.takeOff();
-                } else {
-                    droneStatus.flying = true;
+                if (status.flying) {
+                    status.flying = false;
                     console.log('land');
                     drone.land();
+                } else {
+                    status.flying = true;
+                    console.log('takeOff');
+                    drone.takeOff();
                 }
                 return;
             }
