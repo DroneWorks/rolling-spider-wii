@@ -6,31 +6,27 @@
 
 var HID = require('node-hid'),
     pakkit = require('pakkit'),
-    RollingSpider = require("rolling-spider"),
-    temporal = require("temporal");
+    RollingSpider = require("rolling-spider");
 
-var drone = new RollingSpider();
-var droneStatus = {
-    flying: false
-};
-
-
-var lastSticks = {
-    left: {
-        x: 0,
-        y: 0
+var drone = new RollingSpider(),
+    droneStatus = {
+        flying: false
     },
-    right: {
-        x: 0,
-        y: 0
-    }
-};
-
-var buttons = {
-    plus: false,
-    minus: false,
-    home: false
-};
+    joysticks = {
+        left: {
+            x: 0,
+            y: 0
+        },
+        right: {
+            x: 0,
+            y: 0
+        }
+    },
+    buttons = {
+        plus: false,
+        minus: false,
+        home: false
+    };
 
 var packets = pakkit.export({
     WII_U_PRO_CONTROLLER : {
@@ -87,7 +83,10 @@ HID.devices().forEach((function(d) {
 
         console.log('Found a Wiimote');
         var hid = new HID.HID(d.path),
-            prevSticks;
+            prevSticks = {
+                left: joysticks.left,
+                right: joysticks.right
+            };
 
         var read = function (error, data) {
             var packet = packets.WII_U_PRO_CONTROLLER.read(data),
@@ -95,12 +94,13 @@ HID.devices().forEach((function(d) {
                     left: packet.left,
                     right: packet.right
                 };
+
             if (packet.buttons.hasOwnProperty('plus')) {
-                buttons.plus = packet.buttons.plus;
+                buttons.plus = packet.buttons.plus === true;
             }
 
-            if (!prevSticks || JSON.stringify(prevSticks) !== JSON.stringify(sticks)) {
-                lastSticks = {
+            if (JSON.stringify(prevSticks) !== JSON.stringify(sticks)) {
+                joysticks = {
                     left: {
                         x: normalize(packet.left.x),
                         y: normalize(packet.left.y)
@@ -110,7 +110,6 @@ HID.devices().forEach((function(d) {
                         y: normalize(packet.right.y)
                     }
                 };
-                //console.log(lastSticks);
             }
 
             prevSticks = sticks;
@@ -126,8 +125,7 @@ drone.connect(function () {
 
         drone.flatTrim();
 
-        function drive() {
-
+        function commandLoop() {
             if (buttons.plus) {
                 buttons.plus = false;
                 if (droneStatus.flying) {
@@ -141,18 +139,17 @@ drone.connect(function () {
                 }
                 return;
             }
+
             drone.drive(
-                lastSticks.right.x,
-                lastSticks.right.y,
-                lastSticks.left.x,
-                lastSticks.left.y,
+                joysticks.right.x,
+                joysticks.right.y,
+                joysticks.left.x,
+                joysticks.left.y,
                 1
             );
         }
 
-        temporal.delay(1000, function () {
-            console.log('Start listening to Wiimote commands...');
-            setInterval(drive, 50);
-        });
+        console.log('Start listening to Wiimote commands...');
+        setInterval(commandLoop, 50);
     });
 });

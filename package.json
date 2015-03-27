@@ -25,7 +25,6 @@
   "dependencies": {
     "node-hid": "^0.3.2",
     "pakkit": "0.0.1",
-    "rolling-spider": "git://github.com/voodootikigod/node-rolling-spider.git",
-    "temporal": "^0.4.0"
+    "rolling-spider": "git://github.com/voodootikigod/node-rolling-spider.git"
   }
 }
