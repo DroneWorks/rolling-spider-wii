@@ -1,0 +1,28 @@
+{
+  "name": "rolling-spider-wii",
+  "version": "1.0.0",
+  "description": "Control your Rolling Spider with a Wii U Pro Controller",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DroneWorks/rolling-spider-wii.git"
+  },
+  "keywords": [
+    "parrot",
+    "rolling spider",
+    "drone",
+    "flight"
+  ],
+  "author": "Arnaud Ceccaldi",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/DroneWorks/rolling-spider-wii/issues"
+  },
+  "homepage": "https://github.com/DroneWorks/rolling-spider-wii",
+  "dependencies": {
+    "node-hid": "^0.3.2",
+    "pakkit": "0.0.1",
+    "rolling-spider": "git://github.com/voodootikigod/node-rolling-spider.git",
+    "temporal": "^0.4.0"
+  }
+}
