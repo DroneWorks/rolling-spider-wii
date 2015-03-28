@@ -1,9 +1,5 @@
 'use strict';
 
-/*
- * npm install git://github.com/FluffyJack/node-rolling-spider.git
- */
-
 var HID = require('node-hid'),
     pakkit = require('pakkit'),
     RollingSpider = require("rolling-spider");
