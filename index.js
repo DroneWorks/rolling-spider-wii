@@ -185,7 +185,7 @@ drone.connect(function () {
         }
 
         drone.flatTrim();
-        setInterval(commandLoop, 50);
+        setInterval(commandLoop, 20);
         console.log('Start listening to Wii controller inputs...');
     });
 });
