@@ -9,9 +9,6 @@ var HID = require('node-hid'),
     RollingSpider = require("rolling-spider");
 
 var drone = new RollingSpider(),
-    status = {
-        flying: false
-    },
     joysticks = {
         left: {
             x: 0,
@@ -23,14 +20,58 @@ var drone = new RollingSpider(),
         }
     },
     buttons = {
-        plus: false,
-        minus: false,
-        home: false,
-        l: false,
-        r: false,
-        zl: false,
-        zr: false
-    };
+        plus: {
+            count: 0,
+            modulus: 2,
+            actions: [
+                ['land'], // count is odd
+                ['takeOff'] // count is even
+            ]
+        },
+        minus: {
+            count: 0,
+            modulus: 1,
+            actions: [
+                ['flatTrim']
+            ]
+        },
+        home: {
+            count: 0,
+            modulus: 1,
+            actions: [
+                ['emergency']
+            ]
+        },
+        l: {
+            count: 0,
+            modulus: 1,
+            actions: [
+                ['backFlip']
+            ]
+        },
+        r: {
+            count: 0,
+            modulus: 1,
+            actions: [
+                ['frontFlip']
+            ]
+        },
+        zl: {
+            count: 0,
+            modulus: 1,
+            actions: [
+                ['leftFlip']
+            ]
+        },
+        zr: {
+            count: 0,
+            modulus: 1,
+            actions: [
+                ['rightFlip']
+            ]
+        }
+    },
+    actions = [];
 
 var packets = pakkit.export({
     WII_U_PRO_CONTROLLER : {
@@ -100,12 +141,13 @@ HID.devices().forEach((function(d) {
                 };
 
             Object.keys(buttons).forEach(function (key) {
-                if (packet.buttons.hasOwnProperty(key)) {
-                    buttons[key] = packet.buttons[key] === true;
+                if (buttons.hasOwnProperty(key) && packet.buttons.hasOwnProperty(key) && packet.buttons[key]) {
+                    console.log('Pressed button:', key);
+                    actions = actions.concat(buttons[key].actions[++buttons[key].count % buttons[key].modulus]);
                 }
             });
 
-            if (JSON.stringify(prevSticks) !== JSON.stringify(sticks)) {
+            if (JSON.stringify(sticks) !== JSON.stringify(prevSticks)) {
                 joysticks = {
                     left: {
                         x: normalize(packet.left.x),
@@ -129,48 +171,11 @@ HID.devices().forEach((function(d) {
 drone.connect(function () {
     drone.setup(function () {
 
-        drone.flatTrim();
-
         function commandLoop() {
-            if (buttons.plus) {
-                buttons.plus = false;
-                if (status.flying) {
-                    status.flying = false;
-                    console.log('land');
-                    drone.land();
-                } else {
-                    status.flying = true;
-                    console.log('takeOff');
-                    drone.takeOff();
-                }
-                return;
-            }
-
-            if (buttons.home) {
-                buttons.home = false;
-                drone.emergency();
-                return;
-            }
-
-            if (buttons.zl) {
-                buttons.zl = false;
-                drone.leftFlip();
-                return;
-            }
-            if (buttons.zr) {
-                buttons.zr = false;
-                drone.rightFlip();
-                return;
-            }
-
-            if (buttons.l) {
-                buttons.l = false;
-                drone.backFlip();
-                return;
-            }
-            if (buttons.r) {
-                buttons.r = false;
-                drone.frontFlip();
+            if (actions.length) {
+                drone[actions[0]]();
+                console.log('Sent action:', actions[0]);
+                actions.shift();
                 return;
             }
 
@@ -183,7 +188,8 @@ drone.connect(function () {
             );
         }
 
-        console.log('Start listening to Wiimote commands...');
+        drone.flatTrim();
         setInterval(commandLoop, 50);
+        console.log('Start listening to Wii controller inputs...');
     });
 });
