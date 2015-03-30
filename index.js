@@ -35,7 +35,7 @@ var drone = new RollingSpider(argv.uuid),
             count: 0,
             modulus: 1,
             actions: [
-                ['emergency']
+                ['wheelOff', 'emergency']
             ]
         },
         l: {
@@ -71,7 +71,7 @@ var drone = new RollingSpider(argv.uuid),
             modulus: 2,
             actions: [
                 ['wheelOn'], // count is odd
-                ['wheelOff'] // count is even
+                ['wheelOff', 'emergency'] // count is even
             ]
         }
     },
