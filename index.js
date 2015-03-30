@@ -18,10 +18,9 @@ var drone = new RollingSpider(),
     buttons = {
         plus: {
             count: 0,
-            modulus: 2,
+            modulus: 1,
             actions: [
-                ['land'], // count is odd
-                ['takeOff'] // count is even
+                ['toggle']
             ]
         },
         minus: {
