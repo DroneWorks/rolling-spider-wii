@@ -2,9 +2,10 @@
 
 var HID = require('node-hid'),
     pakkit = require('pakkit'),
-    RollingSpider = require("rolling-spider");
+    RollingSpider = require("rolling-spider"),
+    argv = require('yargs').argv;
 
-var drone = new RollingSpider(),
+var drone = new RollingSpider(argv.uuid),
     joysticks = {
         left: {
             x: 0,
