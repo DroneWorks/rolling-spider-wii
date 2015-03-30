@@ -64,6 +64,14 @@ var drone = new RollingSpider(),
             actions: [
                 ['rightFlip']
             ]
+        },
+        a: {
+            count: 0,
+            modulus: 2,
+            actions: [
+                ['frontFlip'], // count is odd
+                ['backFlip'] // count is even
+            ]
         }
     },
     actions = [];
