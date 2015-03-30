@@ -69,8 +69,8 @@ var drone = new RollingSpider(),
             count: 0,
             modulus: 2,
             actions: [
-                ['frontFlip'], // count is odd
-                ['backFlip'] // count is even
+                ['wheelOn'], // count is odd
+                ['wheelOff'] // count is even
             ]
         }
     },
@@ -192,7 +192,7 @@ drone.connect(function () {
         }
 
         drone.flatTrim();
-        setInterval(commandLoop, 20);
+        setInterval(commandLoop, 50);
         console.log('Start listening to Wii controller inputs...');
     });
 });
